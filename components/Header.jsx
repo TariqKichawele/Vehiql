@@ -6,9 +6,9 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { CarFront, Heart, Layout, ArrowLeft } from "lucide-react"
 
 
-const Header = () => {
+const Header = ({ isAdminPage = false }) => {
   const isAdmin = false;
-  const isAdminPage = false;
+
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <nav className="mx-auto px-4 py-4 flex items-center justify-between">
