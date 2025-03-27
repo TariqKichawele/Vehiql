@@ -15,8 +15,6 @@ const CarCard = ({ car }) => {
     const isToggling = false;
     const isSaved = false;
 
-    console.log(car.images[0])
-
   return (
     <Card className="overflow-hidden hover:shadow-lg transition group">
         <div className="relative h-48">
