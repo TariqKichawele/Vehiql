@@ -4,10 +4,12 @@ import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { CarFront, Heart, Layout, ArrowLeft } from "lucide-react"
+import { checkUser } from '@/lib/checkUser'
 
 
-const Header = ({ isAdminPage = false }) => {
-  const isAdmin = false;
+const Header = async ({ isAdminPage = false }) => {
+  const user = await checkUser();
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
