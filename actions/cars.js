@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "@/lib/supabase";
+import { serializeCarData } from "@/lib/helpers";
 
 async function fileToBase64(file) {
     const bytes = await file.arrayBuffer();
@@ -62,7 +63,7 @@ export async function processCarImageWithAI(file) {
             }
 
             For confidence, provide a value between 0 and 1 representing how confident you are in your overall identification.
-            Only respond with the JSON object, nothing else.
+            Only respond with the JSON object, nothing else. For the price in the JSON object, make sure you do not include the currency sign.
         `;
 
         const result = await model.generateContent([imagePart, prompt]);
@@ -134,7 +135,7 @@ export async function addCar({ carData, images }) {
         for (let i = 0; i < images.length; i++) {
             const base64Data = images[i];
 
-            if (!base64Data || !base64Data.startWith("data:image/")) {
+            if (!base64Data || !base64Data.startsWith("data:image/")) {
                 console.warn("Skipping invalid image data:", base64Data);
                 continue;
             }
@@ -187,6 +188,8 @@ export async function addCar({ carData, images }) {
             }
         });
 
+        console.log(car);
+
         revalidatePath("/admin/cars");
 
         return {
@@ -194,6 +197,126 @@ export async function addCar({ carData, images }) {
         };
     } catch (error) {
         throw new Error("Error adding car:" + error.message);
+    }
+}
+
+export async function getCars(search = "") {
+    try {
+        let where = {};
+
+        if (search) {
+            where.OR = [
+                { make: { contains: search, mode: "insensitive" } },
+                { model: { contains: search, mode: "insensitive" } },
+                { color: { contains: search, mode: "insensitive" } },
+            ]
+        }
+
+        const cars = await db.car.findMany({
+            where,
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        const serializedCars = cars.map(serializeCarData);
+
+        return {
+            success: true,
+            data: serializedCars
+        }
+    } catch (error) {
+        console.error("Error fetching cars:", error);
+        return {
+            success: false,
+            error: "Failed to fetch cars"
+        }
+    }
+}
+
+export async function deleteCar(id) {
+    try {
+        const { userId } = await auth();
+        if (!userId) throw new Error("Unauthorized");
+
+        const car = await db.car.findUnique({
+            where: {
+                id,
+            },
+            select: { images: true },
+        });
+
+        if (!car) throw new Error("Car not found");
+
+        await db.car.delete({
+            where: { id },
+        });
+
+        try {
+            const cookieStore = cookies();
+            const supabase = createClient(cookieStore);
+
+            const filePaths = car.images
+                .map((imageUrl) => {
+                    const url = new URL(imageUrl);
+                    const pathMatch = url.pathname.match(/\/car-images\/(.*)/);
+                    return pathMatch ? pathMatch[1] : null;
+                })
+                .filter(Boolean);
+
+            if (filePaths.length > 0) {
+                const { error } = await supabase.storage
+                    .from("car-images")
+                    .remove(filePaths);
+                if (error) {
+                    console.error("Error deleting images:", error);
+                }
+            }
+        } catch (error) {
+            console.error("Error with storage operation:", error);
+        }
+
+        revalidatePath("/admin/cars");
+
+        return {
+            success: true
+        }
+    } catch (error) {
+        console.error("Error deleting car:", error);
+        return {
+            success: false,
+            error: "Failed to delete car"
+        }
+    }
+}
+
+export async function updateCarStatus(id, { status, featured }) {
+    try {
+        const { userId } = await auth();
+        if (!userId) throw new Error("Unauthorized");
+
+        const updateData = {};
+
+        if (status !== undefined) {
+            updateData.featured = featured
+        }
+
+        await db.car.update({
+            where: { id },
+            data: updateData
+        })
+
+        revalidatePath("/admin/cars");
+
+        return {
+            success: true
+        }
+    } catch (error) {
+        console.error("Error updating car status:", error);
+        return {
+            success: false,
+            error: "Failed to update car status"
+        }
     }
 }
 

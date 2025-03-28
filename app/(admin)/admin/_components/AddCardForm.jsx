@@ -14,10 +14,12 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from "zod";
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useDropzone } from 'react-dropzone';
+import useFetch from '@/hooks/useFetch';
+import { addCar, processCarImageWithAI } from '@/actions/cars';
 
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
 const transmissions = ["Automatic", "Manual", "Semi-Automatic"];
@@ -87,6 +89,73 @@ const AddCardForm = () => {
       featured: false,
     }
   });
+
+  const {
+    loading: addCarLoading,
+    fn: addCarFn,
+    data: addCarResult
+  } = useFetch(addCar)
+
+  const {
+    loading: processImageLoading,
+    fn: processImageFn,
+    data: processImageResult,
+    error: processImageError
+  } = useFetch(processCarImageWithAI);
+
+  useEffect(() => {
+    if (addCarResult?.success) {
+      toast.success("Car added successfully");
+      router.push("/admin/cars");
+    }
+  }, [addCarResult, router]);
+
+  useEffect(() => {
+    if (processImageError) {
+      toast.error(processImageError.message || "Failed to upload car");
+    }
+  }, [processImageError])
+
+  useEffect(() => {
+    if (processImageResult?.success) {
+      const carDetails = processImageResult.data;
+
+      setValue("make", carDetails.make);
+      setValue("model", carDetails.model);
+      setValue("year", carDetails.year.toString());
+      setValue("color", carDetails.color);
+      setValue("bodyType", carDetails.bodyType);
+      setValue("fuelType", carDetails.fuelType);
+      setValue("price", carDetails.price);
+      setValue("mileage", carDetails.mileage);
+      setValue("transmission", carDetails.transmission);
+      setValue("description", carDetails.description);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImages((prev) => [...prev, e.target.result]);
+      };
+      reader.readAsDataURL(uploadedAIImage);
+
+      toast.success("Successfully extracted car details", {
+        description: `Detected ${carDetails.year} ${carDetails.make} ${
+          carDetails.model
+        } with ${Math.round(carDetails.confidence * 100)}% confidence`,
+      });
+
+      // Switch to manual tab for the user to review and fill in missing details
+      setActiveTab("manual");
+    }
+  }, [processImageResult, setValue, uploadedAIImage]);
+
+  const processWithAI = async () => {
+    if (!uploadedAIImage) {
+      toast.error("Please upload an image first");
+      return;
+    }
+
+    await processImageFn(uploadedAIImage);
+  }
 
   const onAIDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -169,7 +238,25 @@ const AddCardForm = () => {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async (data) => {};
+  const onSubmit = async (data) => {
+    if (uploadedImages.length === 0) {
+      setImageError("Please upload at least one image");
+      return;
+    }
+
+    const carData = {
+      ...data,
+      year: parseInt(data.year),
+      price: parseFloat(data.price),
+      mileage: parseInt(data.mileage),
+      seats: data.seats ? parseInt(data.seats) : null,
+    };
+
+    await addCarFn({
+      carData,
+      images: uploadedImages
+    })
+  };
 
 
 
