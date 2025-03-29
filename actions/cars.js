@@ -188,8 +188,6 @@ export async function addCar({ carData, images }) {
             }
         });
 
-        console.log(car);
-
         revalidatePath("/admin/cars");
 
         return {

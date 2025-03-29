@@ -1,14 +1,15 @@
-'use server'
+"use server";
 
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { auth } from "@clerk/nextjs/server";
 
 export async function getDealershipInfo() {
     try {
         const { userId } = await auth();
         if (!userId) throw new Error("Unauthorized");
 
-        let dealership = await db.dealership.findFirst({
+        let dealership = await db.dealershipInfo.findFirst({
             include: {
                 workingHours: {
                     orderBy: {
@@ -150,6 +151,8 @@ export async function getUsers() {
         const users = await db.user.findMany({
             orderBy: { createdAt: "desc" },
         });
+
+        console.log(users);
 
         return {
             success: true,

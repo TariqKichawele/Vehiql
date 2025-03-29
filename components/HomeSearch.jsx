@@ -1,12 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import { useDropzone } from 'react-dropzone';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Camera, Upload, Search } from "lucide-react"
+import useFetch from '@/hooks/useFetch';
+import { processImageSearch } from '@/actions/home';
 
 const HomeSearch = () => {
     const router = useRouter();
@@ -15,6 +17,33 @@ const HomeSearch = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [searchImage, setSearchImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
+
+    const {
+        loading: isProcessing,
+        fn: processImageFn,
+        data: processResult,
+        error: processError
+    } = useFetch(processImageSearch);
+
+    useEffect(() => {
+        if (processResult?.success) {
+            const params = new URLSearchParams();
+
+            if (processResult.data.make) params.set("make", processResult.data.make);
+            if (processResult.data.bodyType) params.set("bodyType", processResult.data.bodyType);
+            if (processResult.data.color) params.set("color", processResult.data.color);
+
+            router.push(`/cars?${params.toString()}`);
+        }
+    }, [processResult, router]);
+
+    useEffect(() => {
+        if (processError) {
+          toast.error(
+            "Failed to analyze image: " + (processError.message || "Unknown error")
+          );
+        }
+    }, [processError]);
 
     const handleTextSearch = (e) => {
         e.preventDefault();
@@ -26,8 +55,14 @@ const HomeSearch = () => {
         router.push(`/cars?search=${encodeURIComponent(searchTerm)}`);
     };
 
-    const handleImageSearch = (e) => {
+    const handleImageSearch = async (e) => {
         e.preventDefault();
+        if (!searchImage) {
+            toast.error("Please upload an image first");
+            return;
+        }
+
+        await processImageFn(searchImage);;
     };
 
     const onDrop = (acceptedFiles) => {
