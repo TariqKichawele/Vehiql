@@ -1,19 +1,58 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent  } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Heart, Car as CarIcon, Loader2 } from 'lucide-react'
+import { useAuth } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import useFetch from '@/hooks/useFetch'
+import { toggleSavedCar } from '@/actions/car-listing'
+import { toast } from 'sonner'
 const CarCard = ({ car }) => {
-    const handleToggleSave = () => {
-        // Logic to toggle save state
+    const { isSignedIn } = useAuth();
+    const router = useRouter();
+    const [isSaved, setIsSaved ] = useState(car.wishlisted);
+
+    const {
+        loading: isToggling,
+        fn: toggleSavedCarFn,
+        data: toggleResult,
+        error: toggleError
+    } = useFetch(toggleSavedCar);
+
+    useEffect(() => {
+        if (toggleResult?.success && toggleResult.saved !== isSaved) {
+            setIsSaved(toggleResult.saved);
+            toast.success(toggleResult.message);
+        }
+    }, [toggleResult, isSaved]);
+
+    useEffect(() => {
+        if (toggleError) {
+            toast.error(toggleError);
+        }
+    }, [toggleError]);
+
+    const handleToggleSave = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isSignedIn) {
+            toast.error("You must be signed in to save a car");
+            router.push("/sign-in");
+            return;
+        }
+
+        if (isToggling) return;
+
+        await toggleSavedCarFn(car.id);
     }
 
-    const isToggling = false;
-    const isSaved = false;
+    
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition group">

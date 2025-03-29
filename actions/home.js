@@ -97,7 +97,7 @@ export async function processImageSearch(file) {
         `;
 
         const result = await model.generateContent([imagePart, prompt]);
-        const response = await result.response;
+        const response = result.response;
         const text = response.text();
         const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
 
