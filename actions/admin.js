@@ -44,7 +44,7 @@ export async function getDashboardData() {
                 }
             }),
 
-            db.testDrive.findMany({
+            db.testDriveBooking.findMany({
                 select: {
                     id: true,
                     status: true,
