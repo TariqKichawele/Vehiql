@@ -248,15 +248,15 @@ const CarFilters = ({ filters }) => {
                         Filters
                     </h3>
                     {activeFilterCount > 0 && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 text-sm text-gray-600"
-                        onClick={clearFilters}
-                    >
-                        <X className="mr-1 h-3 w-3" />
-                        Clear All
-                    </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-sm text-gray-600"
+                            onClick={clearFilters}
+                        >
+                            <X className="mr-1 h-3 w-3" />
+                            Clear All
+                        </Button>
                     )}
                 </div>
 

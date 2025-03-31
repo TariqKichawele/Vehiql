@@ -177,13 +177,11 @@ export async function getCarById(carId) {
         }
 
         const car = await db.car.findUnique({
-            where: {
-                id: carId,
-            },
+            where: { id: carId },
         });
 
         if (!car) {
-            return {
+            return { 
                 success: false,
                 error: "Car not found",
             }

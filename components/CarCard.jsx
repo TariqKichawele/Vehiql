@@ -52,8 +52,6 @@ const CarCard = ({ car }) => {
         await toggleSavedCarFn(car.id);
     }
 
-    
-
   return (
     <Card className="overflow-hidden hover:shadow-lg transition group">
         <div className="relative h-48">
