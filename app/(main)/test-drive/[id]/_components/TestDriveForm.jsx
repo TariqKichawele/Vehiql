@@ -280,150 +280,150 @@ const TestDriveForm = ({ car, testDriveInfo }) => {
                     <h2 className="text-xl font-bold mb-6">Schedule Your Test Drive</h2>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Date Selection */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-medium">
-                            Select a Date
-                        </label>
-                        <Controller
-                            name="date"
-                            control={control}
-                            render={({ field }) => (
-                                <div>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
-                                        >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {field.value
-                                                ? format(field.value, "PPP")
-                                                : "Pick a date"
-                                            }
-                                        </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={isDayDisabled}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    {errors.date && (
-                                        <p className="text-sm font-medium text-red-500 mt-1">
-                                            {errors.date.message}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                        />
-                    </div>
-
-                    {/* Time Slot Selection */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-medium">
-                        Select a Time Slot
-                        </label>
-                        <Controller
-                        name="timeSlot"
-                        control={control}
-                        render={({ field }) => (
-                            <div>
-                            <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                disabled={
-                                !selectedDate || availableTimeSlots.length === 0
-                                }
-                            >
-                                <SelectTrigger>
-                                <SelectValue
-                                    placeholder={
-                                    !selectedDate
-                                        ? "Please select a date first"
-                                        : availableTimeSlots.length === 0
-                                        ? "No available slots on this date"
-                                        : "Select a time slot"
-                                    }
-                                />
-                                </SelectTrigger>
-                                <SelectContent>
-                                {availableTimeSlots.map((slot) => (
-                                    <SelectItem key={slot.id} value={slot.id}>
-                                    {slot.label}
-                                    </SelectItem>
-                                ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.timeSlot && (
-                                <p className="text-sm font-medium text-red-500 mt-1">
-                                {errors.timeSlot.message}
-                                </p>
-                            )}
-                            </div>
-                        )}
-                        />
-                    </div>
-
-                    {/* Notes */}
-                    <div className="space-y-2">
-                        <label className="block text-sm font-medium">
-                        Additional Notes (Optional)
-                        </label>
-                        <Controller
-                        name="notes"
-                        control={control}
-                        render={({ field }) => (
-                            <Textarea
-                            {...field}
-                            placeholder="Any specific questions or requests for your test drive?"
-                            className="min-h-24"
+                        {/* Date Selection */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">
+                                Select a Date
+                            </label>
+                            <Controller
+                                name="date"
+                                control={control}
+                                render={({ field }) => (
+                                    <div>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "w-full justify-start text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {field.value
+                                                        ? format(field.value, "PPP")
+                                                        : "Pick a date"
+                                                    }
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={isDayDisabled}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        {errors.date && (
+                                            <p className="text-sm font-medium text-red-500 mt-1">
+                                                {errors.date.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             />
-                        )}
-                        />
-                    </div>
+                        </div>
 
-                    {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={bookingInProgress}
-                    >
-                        {bookingInProgress ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Booking Your Test Drive...
-                        </>
-                        ) : (
-                        "Book Test Drive"
-                        )}
-                    </Button>
+                        {/* Time Slot Selection */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">
+                                Select a Time Slot
+                            </label>
+                            <Controller
+                                name="timeSlot"
+                                control={control}
+                                render={({ field }) => (
+                                    <div>
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            disabled={
+                                                !selectedDate || availableTimeSlots.length === 0
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue
+                                                    placeholder={
+                                                    !selectedDate
+                                                        ? "Please select a date first"
+                                                        : availableTimeSlots.length === 0
+                                                        ? "No available slots on this date"
+                                                        : "Select a time slot"
+                                                    }
+                                                />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableTimeSlots.map((slot) => (
+                                                    <SelectItem key={slot.id} value={slot.id}>
+                                                        {slot.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.timeSlot && (
+                                            <p className="text-sm font-medium text-red-500 mt-1">
+                                                {errors.timeSlot.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            />
+                        </div>
+
+                        {/* Notes */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium">
+                                Additional Notes (Optional)
+                            </label>
+                            <Controller
+                                name="notes"
+                                control={control}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        placeholder="Any specific questions or requests for your test drive?"
+                                        className="min-h-24"
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={bookingInProgress}
+                        >
+                            {bookingInProgress ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Booking Your Test Drive...
+                                </>
+                            ) : (
+                                "Book Test Drive"
+                            )}
+                        </Button>
                     </form>
 
                     {/* Instructions */}
                     <div className="mt-8 bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">What to expect</h3>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                        <li className="flex items-start">
-                        <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                        Bring your driver's license for verification
-                        </li>
-                        <li className="flex items-start">
-                        <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                        Test drives typically last 30-60 minutes
-                        </li>
-                        <li className="flex items-start">
-                        <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                        A dealership representative will accompany you
-                        </li>
-                    </ul>
+                        <h3 className="font-medium mb-2">What to expect</h3>
+                        <ul className="space-y-2 text-sm text-gray-600">
+                            <li className="flex items-start">
+                                <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                                Bring your driver's license for verification
+                            </li>
+                            <li className="flex items-start">
+                                <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                                Test drives typically last 30-60 minutes
+                            </li>
+                            <li className="flex items-start">
+                                <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                                A dealership representative will accompany you
+                            </li>
+                        </ul>
                     </div>
                 </CardContent>
             </Card>

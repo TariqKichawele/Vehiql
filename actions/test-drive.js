@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { serializeCarData } from "@/lib/helpers";
 
 export async function bookTestDrive({
     carId,
