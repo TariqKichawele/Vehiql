@@ -43,8 +43,6 @@ const CarListings = () => {
         error
     } = useFetch(getCars);
 
-    console.log(result)
-
     useEffect(() => {
         fetchCars({
             search,

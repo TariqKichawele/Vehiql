@@ -152,8 +152,6 @@ export async function getUsers() {
             orderBy: { createdAt: "desc" },
         });
 
-        console.log(users);
-
         return {
             success: true,
             data: users.map((user) => ({

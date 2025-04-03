@@ -67,7 +67,7 @@ const TestDriveCard = ({
      <>
         <Card
             className={`overflow-hidden ${
-            isPast ? "opacity-80 hover:opacity-100 transition-opacity" : ""
+                isPast ? "opacity-80 hover:opacity-100 transition-opacity" : ""
             }`}
         >
             <div className="flex flex-col sm:flex-row">
@@ -188,8 +188,8 @@ const TestDriveCard = ({
                                 <span className="font-medium">Date:</span>
                                 <span>
                                     {format(
-                                    new Date(booking.bookingDate),
-                                    "EEEE, MMMM d, yyyy"
+                                        new Date(booking.bookingDate),
+                                        "EEEE, MMMM d, yyyy"
                                     )}
                                 </span>
                             </div>
@@ -216,7 +216,7 @@ const TestDriveCard = ({
                             onClick={handleCancel}
                             disabled={isCancelling}
                         >
-                                {isCancelling ? (
+                            {isCancelling ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     Cancelling...

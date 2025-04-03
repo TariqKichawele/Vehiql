@@ -100,8 +100,6 @@ export async function getAdminTestDrives({ search = "", status = ""}) {
             success: true,
             data: formattedBookings
         }
-
-        console.log(formattedBookings);
     } catch (error) {
         console.error("Error getting admin test drives:", error);
         return {
